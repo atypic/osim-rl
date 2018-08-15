@@ -309,7 +309,7 @@ class OsimEnv(gym.Env):
         if model_path:
             self.model_path = model_path
             
-        self.osim_model = OsimModel(self.model_path, self.visualize, integrator_accuracy = self.integrator_accuracy, integator_method = self.integrator_method)
+        self.osim_model = OsimModel(self.model_path, self.visualize, integrator_accuracy = self.integrator_accuracy, integrator_method = self.integrator_method)
 
         # Create specs, action and observation spaces mocks for compatibility with OpenAI gym
         self.spec = Spec()
