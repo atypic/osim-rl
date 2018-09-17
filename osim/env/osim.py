@@ -34,13 +34,22 @@ class OsimModel(object):
     state_desc = None
     integrator_accuracy = None
     integrator_method = None
+    integrator_numsteps = 1
 
     maxforces = []
     curforces = []
 
-    def __init__(self, model_path, visualize, integrator_accuracy = 5e-5, integrator_method = 0):
+    def __init__(self, model_path, visualize, 
+            integrator_accuracy = 5e-5, 
+            integrator_method = 0, 
+            integrator_numsteps = 1, 
+            integrator_minstepsize = 0.01, 
+            integrator_maxstepsize = 0.1):
         self.integrator_accuracy = integrator_accuracy
         self.integrator_method = integrator_method
+        self.integrator_numsteps = integrator_numsteps
+        self.integrator_minstepsize = integrator_minstepsize
+        self.integrator_maxstepsize = integrator_maxstepsize
         self.model = opensim.Model(model_path)
         self.model.initSystem()
         self.brain = opensim.PrescribedController()
@@ -231,8 +240,11 @@ class OsimModel(object):
 
     def reset_manager(self):
         self.manager = opensim.Manager(self.model)
-        self.manager.setIntegratorAccuracy(self.integrator_accuracy)
         self.manager.setIntegratorMethod(self.integrator_method)
+        self.manager.setIntegratorAccuracy(self.integrator_accuracy)
+        self.manager.setIntegratorInternalStepLimit(self.integrator_numsteps)
+        self.manager.setIntegratorMinimumStepSize(self.integrator_minstepsize)
+        self.manager.setIntegratorMaxStepSize(self.integrator_maxstepsize)
         self.manager.initialize(self.state)
 
     def reset(self):
@@ -299,17 +311,26 @@ class OsimEnv(gym.Env):
     def is_done(self):
         return False
 
-    def __init__(self, visualize = True, integrator_accuracy = 5e-5, integrator_method = 0):
+    def __init__(self, visualize = True, integrator_accuracy = 5e-5, integrator_method = 0, integrator_numsteps = 1, integrator_minstepsize = 0.001, integrator_maxstepsize = 0.1):
         self.visualize = visualize
         self.integrator_accuracy = integrator_accuracy
         self.integrator_method = integrator_method
+        self.integrator_numsteps = integrator_numsteps
+        self.integrator_minstepsize = integrator_minstepsize
+        self.integrator_maxstepsize = integrator_maxstepsize
         self.load_model()
 
     def load_model(self, model_path = None):
         if model_path:
             self.model_path = model_path
             
-        self.osim_model = OsimModel(self.model_path, self.visualize, integrator_accuracy = self.integrator_accuracy, integrator_method = self.integrator_method)
+        self.osim_model = OsimModel(self.model_path, self.visualize, 
+                integrator_accuracy = self.integrator_accuracy, 
+                integrator_method = self.integrator_method, 
+                integrator_numsteps = self.integrator_numsteps,
+                integrator_minstepsize = self.integrator_minstepsize, 
+                integrator_maxstepsize = self.integrator_maxstepsize, 
+                )
 
         # Create specs, action and observation spaces mocks for compatibility with OpenAI gym
         self.spec = Spec()
@@ -411,14 +432,19 @@ class ProstheticsEnv(OsimEnv):
 
     time_limit = 300
 
-    def __init__(self, visualize = True, integrator_accuracy = 5e-5, integrator_method = 0):
+    def __init__(self, visualize = True, integrator_accuracy = 5e-5, integrator_method = 0, integrator_numsteps = 1, integrator_minstepsize = 0.001, integrator_maxstepsize = 0.1):
         self.model_paths = {}
         self.model_paths["3D_pros"] = os.path.join(os.path.dirname(__file__), '../models/gait14dof22musc_pros_20180507.osim')    
         self.model_paths["3D"] = os.path.join(os.path.dirname(__file__), '../models/gait14dof22musc_20170320.osim')    
         self.model_paths["2D_pros"] = os.path.join(os.path.dirname(__file__), '../models/gait14dof22musc_planar_pros_20180507.osim')    
         self.model_paths["2D"] = os.path.join(os.path.dirname(__file__), '../models/gait14dof22musc_planar_20170320.osim')
         self.model_path = self.model_paths[self.get_model_key()]
-        super(ProstheticsEnv, self).__init__(visualize = visualize, integrator_accuracy = integrator_accuracy, integrator_method = integrator_method)
+        super(ProstheticsEnv, self).__init__(visualize = visualize, 
+                integrator_accuracy = integrator_accuracy, 
+                integrator_method = integrator_method, 
+                integrator_numsteps = integrator_numsteps,
+                integrator_minstepsize = integrator_minstepsize,
+                integrator_maxstepsize = integrator_maxstepsize)
 
     def change_model(self, model='3D', prosthetic=True, difficulty=0, seed=None):
         if (self.model, self.prosthetic) != (model, prosthetic):
