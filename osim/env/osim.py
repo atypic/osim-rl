@@ -244,7 +244,7 @@ class OsimModel(object):
         self.manager.setIntegratorAccuracy(self.integrator_accuracy)
         self.manager.setIntegratorInternalStepLimit(self.integrator_numsteps)
         self.manager.setIntegratorMinimumStepSize(self.integrator_minstepsize)
-        self.manager.setIntegratorMaxStepSize(self.integrator_maxstepsize)
+        self.manager.setIntegratorMaximumStepSize(self.integrator_maxstepsize)
         self.manager.initialize(self.state)
 
     def reset(self):
