@@ -311,7 +311,7 @@ class OsimEnv(gym.Env):
     def is_done(self):
         return False
 
-    def __init__(self, visualize = True, integrator_accuracy = 5e-5, integrator_method = 5):
+    def __init__(self, visualize = True, integrator_accuracy = 1e-3, integrator_method = 5):
         self.visualize = visualize
         self.integrator_accuracy = integrator_accuracy
         self.integrator_method = integrator_method
@@ -446,7 +446,7 @@ class ProstheticsEnv(OsimEnv):
             self.time_limit = 1000
         self.spec.timestep_limit = self.time_limit    
 
-    def __init__(self, visualize = True, integrator_accuracy = 5e-5, difficulty=0, seed=0, integrator_method = 5):
+    def __init__(self, visualize = True, integrator_accuracy = 1e-3, difficulty=0, seed=0, integrator_method = 5):
         self.model_paths = {}
         self.model_paths["3D_pros"] = os.path.join(os.path.dirname(__file__), '../models/gait14dof22musc_pros_20180507.osim')    
         self.model_paths["3D"] = os.path.join(os.path.dirname(__file__), '../models/gait14dof22musc_20170320.osim')    
