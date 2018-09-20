@@ -455,7 +455,7 @@ class ProstheticsEnv(OsimEnv):
         self.model_path = self.model_paths[self.get_model_key()]
         super(ProstheticsEnv, self).__init__(visualize = visualize, 
                 integrator_accuracy = integrator_accuracy, 
-                integrator_method = integrator_method
+                integrator_method = integrator_method)
 #                integrator_numsteps = integrator_numsteps,
 #                integrator_minstepsize = integrator_minstepsize,
 #                integrator_maxstepsize = integrator_maxstepsize)
